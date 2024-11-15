@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Flashcards.Repository;
 
-public class AuthRepository
+public class AuthRepository : IAuthRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
