@@ -12,3 +12,5 @@
 /dataSources/
 /dataSources.local.xml
 *.db
+bin/
+obj/
