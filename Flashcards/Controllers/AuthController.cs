@@ -1,11 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Flashcards.DTO;
 using Flashcards.Models;
-using Flashcards.Repository;
+using Flashcards.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Flashcards.Controllers;
 
@@ -13,87 +9,32 @@ namespace Flashcards.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-   private readonly IAuthRepository _authRepository;
-   private readonly IConfiguration _configuration;
-   public AuthController(IAuthRepository authRepository, IConfiguration configuration)
+   private readonly IAuthService _authService;
+   public AuthController(IAuthService authService)
    {
-      _authRepository = authRepository;
-      _configuration = configuration;
+      _authService = authService;
    }
 
    [HttpPost("register")]
    public async Task<ActionResult<User>> Register([FromBody] RegisterDto request)
    {
-      var existingUser = await _authRepository.GetUserByEmailAsync(request.Email);
-      if (existingUser != null)
+      var result = await _authService.Register(request);
+      if (!result.Succeeded)
       {
-         return BadRequest("User already exists");
+         BadRequest(result.Errors);
       }
-
-      var user = new User
-      {
-         UserName = request.Username,
-         Email = request.Email
-      };
       
-      await _authRepository.RegisterUserAsync(user, request.Password);
-      
-      return user;
+      return Created();
    }
 
-   public async Task<LoginResponse> Login([FromBody] LoginDto request)
+   public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginDto request)
    {
-      var user = await _authRepository.GetUserByEmailAsync(request.Email);
-      if (user == null)
+      var result = await _authService.Login(request);
+      if (result.Success == false)
       {
-         var res = new LoginResponse
-         {
-            Success = false,
-            ErrorMessage = "User does not exist",
-         };
-
-         return res;
-      }
-      
-      var passwordValid = await _authRepository.PasswordSignInAsync(user, request.Password, false);
-      if (!passwordValid.Succeeded)
-      {
-         var res = new LoginResponse
-         {
-            Success = false,
-            ErrorMessage = "Wrong username or password",
-         };
-         
-         return res;
+         return BadRequest(result.ErrorMessage);
       }
 
-      var tokenHandler = new JwtSecurityTokenHandler();
-      var key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-      var tokenDescriptor = new SecurityTokenDescriptor
-      {
-         Subject = new ClaimsIdentity(new Claim[]
-         {
-            new (ClaimTypes.NameIdentifier, user.Id),
-            new (ClaimTypes.Email, user.Email)
-            
-         }),
-         Expires = DateTime.UtcNow.AddDays(3),
-         Issuer = _configuration["JWT:Issuer"],
-         Audience = _configuration["JWT:Audience"],
-         SigningCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-      };
-      
-      var token = tokenHandler.CreateToken(tokenDescriptor);
-      var tokenString = tokenHandler.WriteToken(token);
-
-      var response = new LoginResponse
-      {
-         Success = true,
-         Token = tokenString,
-         Expiration = token.ValidTo
-      };
-      
-      return response;
+      return Ok(result);
    }
 }
