@@ -31,6 +31,25 @@ public class AuthService : IAuthService
                 Code = "AccountAlreadyExist"
             });
         }
+        
+        if (registerDto.Username.Length <= 3)
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Description = "Username must be at least 3 characters long",
+                Code = "UserNameEmpty"
+            });
+        }
+        
+        if (registerDto.Password.Length < 8)
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Code = "PasswordTooShort",
+                Description = "Password must be at least 8 characters long."
+            });
+        }
+        
         var user = new User
         {
             Email = registerDto.Email,

@@ -2,6 +2,7 @@ using System.Text;
 using Flashcards.Data;
 using Flashcards.Models;
 using Flashcards.Repository;
+using Flashcards.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>( options => 
-    options.UseSqlite("/home/niko/work/Databases/flashcards.db"));
+    options.UseSqlite("Data Source=/home/niko/work/Databases/flashcards.db"));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,9 +44,16 @@ builder.Services
 // Repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
+// Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddControllers();
 var app = builder.Build();
 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -53,31 +61,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+//app.UseHttpsRedirection();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

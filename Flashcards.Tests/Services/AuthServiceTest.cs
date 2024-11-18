@@ -15,6 +15,7 @@ public class AuthServiceTest
 
     public AuthServiceTest()
     {
+        _authRepositoryMock = new Mock<IAuthRepository>();
         _configurationMock = new Mock<IConfiguration>();
 
         _configurationMock.Setup(config => 
@@ -119,7 +120,7 @@ public class AuthServiceTest
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Contains(result.Errors, e => e.Code == "DuplicateEmail");
+        Assert.Contains(result.Errors, e => e.Code == "AccountAlreadyExist");
         _authRepositoryMock
                     .Verify(repo => 
                         repo.RegisterUserAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
