@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "ysXO8kz70FCkW4iWNQRD2X5Sr0nJ1s+Y4KO5ZZG+0A9/avUQ4waejPoFe5c0iiTkatyS06vFjDYQQCWaNCsVaA==",
+  "dgSpecHash": "NQ8E8L8TJvc=",
   "success": true,
   "projectFilePath": "/home/niko/work/Flashcards/Flashcards.Tests/Flashcards.Tests.csproj",
   "expectedPackageFiles": [
     "/home/niko/.nuget/packages/castle.core/5.1.1/castle.core.5.1.1.nupkg.sha512",
     "/home/niko/.nuget/packages/coverlet.collector/6.0.0/coverlet.collector.6.0.0.nupkg.sha512",
+    "/home/niko/.nuget/packages/fluentvalidation/11.11.0/fluentvalidation.11.11.0.nupkg.sha512",
     "/home/niko/.nuget/packages/humanizer/2.14.1/humanizer.2.14.1.nupkg.sha512",
     "/home/niko/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/niko/.nuget/packages/humanizer.core.af/2.14.1/humanizer.core.af.2.14.1.nupkg.sha512",
