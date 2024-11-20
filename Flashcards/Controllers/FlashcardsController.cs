@@ -47,6 +47,21 @@ public class FlashcardsController : ControllerBase
 
         return flashcards;
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<FlashcardDto>> GetFlashcard(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+        
+        var card = await _context.Flashcards.FirstOrDefaultAsync(f => f.Id == id);
+
+        return Ok(card);
+    }
     
     [HttpPost]
     public async Task<IActionResult> AddFlashcard([FromBody] FlashcardInsertDto flashcardInsertDto)
@@ -74,15 +89,52 @@ public class FlashcardsController : ControllerBase
         return Ok(flashcard);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateFlashcard([FromBody] Flashcard flashcard)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateFlashcard(Guid id, [FromBody] FlashcardUpdateDto flashcardUpdateDto)
     {
-        throw new NotImplementedException();
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+        
+        var card = await _context.Flashcards.FirstOrDefaultAsync(f => f.Id == id);
+        if (card == null)
+        {
+            return NotFound();
+        }
+        card.Word = flashcardUpdateDto.Word ?? card.Word;
+        card.Definition = flashcardUpdateDto.Definition;
+        card.Example = flashcardUpdateDto.Example;
+
+        _context.Attach(card);
+        _context.Entry(card).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+            
+        return Ok(card);
+        
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteFlashcard([FromBody] Flashcard flashcard)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteFlashcard(Guid id)
     {
-        throw new NotImplementedException();
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+        
+        var card = await _context.Flashcards.FirstOrDefaultAsync(f => f.Id == id);
+        if (card == null)
+        {
+            return NotFound();
+        }
+        
+        _context.Flashcards.Remove(card);
+        await _context.SaveChangesAsync();
+        
+        return Ok("Flashcard deleted");
     }
 }
