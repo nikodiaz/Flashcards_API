@@ -31,14 +31,14 @@ namespace Flashcards.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("LastReviewScore")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Level")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("NextReviewDate")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("Reviewed")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
                         .IsRequired()

@@ -11,14 +11,14 @@ public class Flashcard
     [StringLength(50)]
     public string UserId { get; set; } = default!;
     [StringLength(100)]
-    public string? Word { get; set; }
+    public string Word { get; set; } = default!;
     [StringLength(500)]
     public string? Definition  { get; set; }
     [StringLength(300)]
     public string? Example { get; set; }
     public int Level { get; set; } = 1;
-    public int? LastReviewScore { get; set; }
-    public DateTime NextReviewDate { get; set; }
+    public int? LastReviewScore { get; set; } = null;
+    public DateTime NextReviewDate { get; set; } = DateTime.UtcNow.AddDays(1);
     
     [ForeignKey("UserId")]
     public User User { get; set; } = null!;
