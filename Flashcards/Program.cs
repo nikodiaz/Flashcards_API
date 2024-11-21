@@ -56,9 +56,11 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 // Repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+//builder.Services.AddScoped();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFlashcardService, FlashcardService>();
 
 //Logs
 builder.Services.AddLogging(logging =>
